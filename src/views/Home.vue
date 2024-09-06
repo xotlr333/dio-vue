@@ -1,14 +1,14 @@
 <template>
   <section>
   <div class="title-container">
-    <h3 class="title">모바일</h3><p class="phone">010-85**-*532 </p>
+    <h3 class="title">모바일</h3><p class="phone">{{ userData.phoneNumber}}</p>
   </div>
 
   <div id="MobileUsePriceHtml" class="product-container">
     <div class="mycont-box">
       <div class="mycalling-plan">
         <h4 class="name">이용중인 요금제</h4>
-        <p class="plan">넷플릭스 초이스 스페셜_Y덤</p>
+        <p class="plan">{{ userData.mobileProduct}}</p>
       </div>
       <div class="calling-planbox">
         <div class="calling-head">
@@ -17,8 +17,8 @@
               <strong class="name2">월 실납부금액 <span class="intext">(부가세포함)</span></strong>
             </div>
             <div>
-              <del class="save-price ">월정액 110,000원</del>
-              <strong class="price">66,810원</strong>
+              월정액
+              <strong class="price">{{ userData.payment}}원</strong>
             </div>
           </div>
         </div>
@@ -34,13 +34,13 @@
             <tr>
               <th scope="row">데이터</th>
               <td colspan="3">
-                완전 무제한 (스마트기기/테더링 데이터 140GB)</td>
+                {{ userData.mobileData}}</td>
             </tr>
             <tr>
               <th scope="row">음성</th>
-              <td>무제한 (영상/부가 300분)</td>
+              <td>{{ userData.voice}}</td>
               <th scope="row">문자</th>
-              <td>기본제공</td>
+              <td>{{ userData.sms}}</td>
             </tr>
             </tbody>
           </table>
@@ -67,12 +67,12 @@
         <tbody>
         <tr >
           <th scope="row">할인 유형</th>
-          <td>5G스폰서</td>
+          <td>{{ userData.discountType}}</td>
           <th scope="row">
             약정기간<br>
             (가입일~종료예정일)
           </th>
-          <td>2024.01.20 ~ 2026.01.18</td>
+          <td>{{ userData.contractDate}}</td>
         </tr>
         </tbody>
       </table>
@@ -85,15 +85,15 @@
         <tbody>
         <tr>
           <th scope="row">요금할인(선택약정할인)</th>
-          <td><strong class="money">25,000</strong>원</td>
+          <td><strong class="money">{{ userData.discountAmount}}</strong>원</td>
         </tr>
         <tr>
           <th scope="row">요금할인(선택약정) 반환금</th>
-          <td><strong class="money">160,316</strong>원</td>
+          <td><strong class="money">{{ userData.discountRefund}}</strong>원</td>
         </tr>
         <tr>
           <th scope="row">현재까지 실제 할인받은 금액(금일 기준)</th>
-          <td><strong class="money">175,644</strong>원</td>
+          <td><strong class="money">{{ userData.totalDiscountAmount}}</strong>원</td>
         </tr>
         </tbody>
       </table>
@@ -104,12 +104,13 @@
 </template>
 <script setup>
 import router from "@/router";
-import {onBeforeMount} from "vue";
+import {onBeforeMount, ref} from "vue";
 import axiosInstance from "@/utils/axiosInstance";
 import {AxiosError} from "axios";
 import {useUserStore} from "@/store/useUserStore";
 
 const userStore = useUserStore();
+const userData = ref({});
 
 onBeforeMount(async () => {
   console.log("내 모바일 요금제 데이터 호출");
@@ -126,6 +127,7 @@ onBeforeMount(async () => {
     if(data.code === 0){
       await router.push("login");
     }
+    userData.value = { ...data.information };
 
   } catch (error) {
     if (error instanceof AxiosError) {
